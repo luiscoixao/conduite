@@ -236,7 +236,9 @@ h1{margin:0 0 8px;font-size:40px;line-height:1;font-weight:800;letter-spacing:-0
   }
 
   function render(){
-    var drives = getDrives();
+    var drives = getDrives().slice().sort(function(a, b){
+  return new Date(b.date || 0) - new Date(a.date || 0);
+});
     var list = document.getElementById('driveList');
     var empty = document.getElementById('emptyState');
     var i, drive, row, html;
