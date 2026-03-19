@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Conduite accompagnée</title>
+<title>Conduite accompagnée</title>
 <link rel="apple-touch-icon" href="icon.png.PNG">
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -51,7 +51,6 @@ h1{margin:0 0 8px;font-size:40px;line-height:1;font-weight:800;letter-spacing:-0
   align-items:center;
   gap:10px;
 }
-
 .logo{
   height:110px;
   width:auto;
@@ -63,11 +62,12 @@ h1{margin:0 0 8px;font-size:40px;line-height:1;font-weight:800;letter-spacing:-0
 <div class="app">
   <div class="header">
     <div class="title-row">
-  <img src="logoconduiteaccompagnee.PNG" class="logo" alt="Logo">
-  <h1>Conduite accompagnée</h1>
-</div>
+      <img src="logoconduiteaccompagnee.PNG" class="logo" alt="Logo">
+      <h1>Conduite accompagnée</h1>
+    </div>
     <div class="subtitle">Suivi des trajets de Quentin</div>
   </div>
+
   <div class="totals">
     <div class="total-box">
       <div class="total-label">Kilomètres parcourus</div>
@@ -78,15 +78,16 @@ h1{margin:0 0 8px;font-size:40px;line-height:1;font-weight:800;letter-spacing:-0
       <div class="total-value" id="totalHours">0 h</div>
     </div>
   </div>
+
   <div id="debug" class="debug"></div>
 
   <div id="driveList" class="list"></div>
   <div id="emptyState" class="empty">Aucun trajet enregistré</div>
 
-
   <div id="notice" class="notice">Les trajets du fichier CSV sont déjà importés.</div>
   <div class="top-actions">
-    <button id="importBtn" class="small-btn" type="button">Réimporter les données du CSV</button>
+    <button id="importBtn" class="small-btn" type="button">Importer un fichier CSV</button>
+    <input id="csvFileInput" type="file" accept=".csv,text/csv" style="display:none">
     <button id="resetBtn" class="small-btn" type="button">Réinitialiser l’application</button>
     <button id="exportBtn" class="small-btn" type="button">Sauvegarder en CSV</button>
   </div>
@@ -250,9 +251,9 @@ h1{margin:0 0 8px;font-size:40px;line-height:1;font-weight:800;letter-spacing:-0
 
   function render(){
     var originalDrives = getDrives();
-var drives = originalDrives.slice().sort(function(a, b){
-  return new Date(b.date || 0) - new Date(a.date || 0);
-});
+    var drives = originalDrives.slice().sort(function(a, b){
+      return new Date(b.date || 0) - new Date(a.date || 0);
+    });
     var list = document.getElementById('driveList');
     var empty = document.getElementById('emptyState');
     var i, drive, row, html;
@@ -273,7 +274,7 @@ var drives = originalDrives.slice().sort(function(a, b){
         + '<div class="drive-note">' + buildDetail(drive) + '</div>'
         + '<div class="drive-actions">'
         + '<button class="mini-btn" type="button" data-action="edit" data-index="' + originalDrives.indexOf(drive) + '">Modifier</button>'
-+ '<button class="mini-btn" type="button" data-action="delete" data-index="' + originalDrives.indexOf(drive) + '">Suppr.</button>'
+        + '<button class="mini-btn" type="button" data-action="delete" data-index="' + originalDrives.indexOf(drive) + '">Suppr.</button>'
         + '</div>';
       row.innerHTML = html;
       list.appendChild(row);
@@ -336,10 +337,101 @@ var drives = originalDrives.slice().sort(function(a, b){
   }
 
   function reimportData(){
-    var fresh = cloneInitial();
-    saveDrives(fresh);
-    setNotice('Les données du CSV ont été réimportées.');
-    render();
+    document.getElementById('csvFileInput').click();
+  }
+
+  function normalizeCsvText(text){
+    return text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  }
+
+  function splitCsvLine(line){
+    var result = [];
+    var current = '';
+    var inQuotes = false;
+    var i, char, nextChar;
+
+    for(i = 0; i < line.length; i++){
+      char = line.charAt(i);
+      nextChar = line.charAt(i + 1);
+
+      if(char === '"'){
+        if(inQuotes && nextChar === '"'){
+          current += '"';
+          i++;
+        }else{
+          inQuotes = !inQuotes;
+        }
+      }else if(char === ';' && !inQuotes){
+        result.push(current);
+        current = '';
+      }else{
+        current += char;
+      }
+    }
+
+    result.push(current);
+    return result;
+  }
+
+  function parseCsv(text){
+    var lines = normalizeCsvText(text).split('\n');
+    var rows = [];
+    var i, line, cols;
+
+    for(i = 0; i < lines.length; i++){
+      line = lines[i].trim();
+      if(!line) continue;
+      cols = splitCsvLine(line);
+      rows.push(cols);
+    }
+
+    return rows;
+  }
+
+  function importCsvFile(file){
+    var reader = new FileReader();
+
+    reader.onload = function(event){
+      try{
+        var text = event.target.result;
+        var rows = parseCsv(text);
+        var drives = [];
+        var i, row;
+
+        if(!rows.length){
+          setNotice('Fichier CSV vide.');
+          return;
+        }
+
+        for(i = 1; i < rows.length; i++){
+          row = rows[i];
+          if(!row.length) continue;
+
+          drives.push({
+            car: row[0] || '',
+            date: row[1] || '',
+            trip: row[2] || '',
+            duration: Number(String(row[3] || '0').replace(',', '.')) || 0,
+            km: Number(String(row[4] || '0').replace(',', '.')) || 0,
+            weather: row[5] || '',
+            comment: row[6] || ''
+          });
+        }
+
+        saveDrives(drives);
+        setNotice('Import CSV terminé.');
+        render();
+      }catch(e){
+        setNotice('Erreur lors de l’import du CSV.');
+        showDebug('Import CSV bloqué :\n' + (e && e.message ? e.message : e));
+      }
+    };
+
+    reader.onerror = function(){
+      setNotice('Impossible de lire le fichier CSV.');
+    };
+
+    reader.readAsText(file, 'utf-8');
   }
 
   function resetApp(){
@@ -434,6 +526,13 @@ var drives = originalDrives.slice().sort(function(a, b){
     render();
     document.getElementById('fab').onclick = function(){ openEditor(); };
     document.getElementById('importBtn').onclick = reimportData;
+    document.getElementById('csvFileInput').onchange = function(event){
+      var file = event.target.files && event.target.files[0];
+      if(file){
+        importCsvFile(file);
+      }
+      event.target.value = '';
+    };
     document.getElementById('resetBtn').onclick = resetApp;
     document.getElementById('exportBtn').onclick = exportCsv;
     document.getElementById('cancelBtn').onclick = closeEditor;
