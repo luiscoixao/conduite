@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Conduite accompagnée</title>
+<link rel="apple-touch-icon" href="icon.png.PNG">
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;padding:0 16px 130px;background:#f3f3f6;color:#111;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",sans-serif}
+.app{max-width:760px;margin:0 auto}
+.header{position:sticky;top:0;background:#f3f3f6;z-index:1000;padding:24px 0 12px}
+h1{margin:0 0 8px;font-size:40px;line-height:1;font-weight:800;letter-spacing:-0.04em;color:#ff7a00}
+.subtitle{font-size:16px;color:#8e8e93;margin-bottom:12px}
+.notice{background:#fff;border:1px solid #ececf1;border-radius:16px;padding:12px 14px;font-size:14px;color:#666;margin-bottom:14px}
+.top-actions{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.small-btn,.mini-btn,.btn,.fab{appearance:none;-webkit-appearance:none;border:none;cursor:pointer}
+.small-btn{background:#fff;color:#ff7a00;border:1px solid #ececf1;border-radius:14px;padding:12px 14px;font-size:15px;font-weight:700}
+.list{display:block}
+.drive{display:block;background:transparent;border-bottom:1px solid #ececf1;padding:18px 0}
+.drive-title{font-size:26px;font-weight:800;margin-bottom:8px;line-height:1.2}
+.drive-meta{font-size:20px;color:#ff7a00;line-height:1.4}
+.drive-note{margin-top:8px;font-size:18px;color:#8e8e93;line-height:1.5}
+.drive-actions{display:flex;gap:8px;margin-top:12px}
+.mini-btn{background:#fff;color:#ff7a00;border:1px solid #ececf1;border-radius:12px;padding:12px 14px;font-size:16px;font-weight:700}
+.empty{display:none;font-size:17px;color:#8e8e93;padding:10px 0}
+.totals{margin-top:22px}
+.total-box{background:#fff;border:1px solid #ececf1;border-radius:18px;padding:14px;margin-bottom:12px}
+.total-label{font-size:13px;color:#8e8e93;margin-bottom:6px}
+.total-value{font-size:28px;font-weight:800;letter-spacing:-0.03em;color:#ff7a00}
+.editor-backdrop{display:none;position:fixed;left:0;right:0;top:0;bottom:0;background:rgba(0,0,0,.22);padding:12px;z-index:9999}
+.editor-backdrop.open{display:block}
+.editor-sheet{position:absolute;left:12px;right:12px;bottom:12px;background:#fff;border-radius:24px;padding:18px;max-height:88vh;overflow:auto}
+.editor-title{font-size:22px;font-weight:700;color:#ff7a00;margin-bottom:12px}
+.field{display:block;width:100%;padding:14px;border-radius:16px;border:1px solid #e7e7ec;margin-bottom:12px;font-size:17px;background:#fff;color:#111}
+.row{display:block}
+.actions{display:flex;gap:10px;margin-top:8px}
+.btn{flex:1;padding:14px;border-radius:16px;font-weight:700;font-size:16px}
+.btn-cancel{background:#f2f2f7;color:#111}
+.btn-save{background:#ff7a00;color:#fff}
+.fab{position:fixed;right:22px;bottom:28px;width:72px;height:72px;border-radius:36px;background:#ff7a00;color:#fff;font-size:42px;z-index:1000;box-shadow:0 8px 24px rgba(255,122,0,.25)}
+.debug{white-space:pre-wrap;background:#fff3f3;border:1px solid #ffd1d1;color:#b00020;border-radius:14px;padding:12px;margin-bottom:12px;display:none}
+@media (min-width:561px){
+.row{display:flex;gap:10px}
+.row .field{flex:1}
+.totals{display:flex;gap:12px}
+.totals .total-box{flex:1;margin-bottom:0}
+}
+.title-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.logo{
+  height:110px;
+  width:auto;
+  object-fit:contain;
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="title-row">
+      <img src="logoconduiteaccompagnee.PNG" class="logo" alt="Logo">
+      <h1>Conduite accompagnée</h1>
+    </div>
+    <div class="subtitle">Suivi des trajets de Quentin</div>
+  </div>
+
+  <div class="totals">
+    <div class="total-box">
+      <div class="total-label">Kilomètres parcourus</div>
+      <div class="total-value" id="totalKm">0 km</div>
+    </div>
+    <div class="total-box">
+      <div class="total-label">Temps total</div>
+      <div class="total-value" id="totalHours">0 h</div>
+    </div>
+  </div>
+
+  <div id="debug" class="debug"></div>
+
+  <div id="driveList" class="list"></div>
+  <div id="emptyState" class="empty">Aucun trajet enregistré</div>
+
+  <div id="notice" class="notice">Les trajets du fichier CSV sont déjà importés.</div>
+  <div class="top-actions">
+    <button id="importBtn" class="small-btn" type="button">Importer un fichier CSV</button>
+    <input id="csvFileInput" type="file" accept=".csv,text/csv" style="display:none">
+    <button id="resetBtn" class="small-btn" type="button">Réinitialiser l’application</button>
+    <button id="exportBtn" class="small-btn" type="button">Sauvegarder en CSV</button>
+  </div>
+</div>
+
+<button id="fab" class="fab" type="button">+</button>
+
+<div id="editorBackdrop" class="editor-backdrop">
+  <div class="editor-sheet">
+    <div id="editorTitle" class="editor-title">Nouveau trajet</div>
+    <input id="driveCar" class="field" placeholder="Voiture">
+    <input id="driveDate" type="date" class="field">
+    <div class="row">
+      <input id="driveTrip" class="field" placeholder="Trajet">
+      <input id="driveWeather" class="field" placeholder="Météo">
+    </div>
+    <div class="row">
+      <input id="driveDuration" type="number" min="0" step="1" class="field" placeholder="Durée (min)">
+      <input id="driveKm" type="number" min="0" step="0.1" class="field" placeholder="Km">
+    </div>
+    <input id="driveComment" class="field" placeholder="Commentaire">
+    <div class="actions">
+      <button id="cancelBtn" class="btn btn-cancel" type="button">Annuler</button>
+      <button id="saveBtn" class="btn btn-save" type="button">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var INITIAL_DRIVES = [
+    {car:"Titine",date:"2025-12-19",trip:"Ville",duration:15,km:2.8,weather:"Nuit",comment:""},
+    {car:"Titine",date:"2025-12-21",trip:"Agglomération",duration:18,km:7,weather:"Jour / Pluie",comment:""},
+    {car:"Titine",date:"2025-12-22",trip:"Agglomération",duration:35,km:14.5,weather:"Jour / Nuit",comment:""},
+    {car:"Félix",date:"2025-12-24",trip:"Ville",duration:30,km:12,weather:"Jour",comment:""},
+    {car:"Félix",date:"2025-12-26",trip:"Ville",duration:30,km:20,weather:"Jour",comment:""},
+    {car:"Félix",date:"2025-12-27",trip:"Ville",duration:25,km:16,weather:"Jour",comment:""},
+    {car:"Félix",date:"2025-12-28",trip:"Agglomération",duration:28,km:16,weather:"Jour",comment:"Leroy Merlin"},
+    {car:"Félix",date:"2026-01-15",trip:"Ville",duration:25,km:10,weather:"Jour",comment:""},
+    {car:"Félix",date:"2026-01-18",trip:"Ville",duration:10,km:2.4,weather:"Jour",comment:"Stade Guyancourt"},
+    {car:"Félix",date:"2026-01-21",trip:"Ville",duration:10,km:2.4,weather:"Jour",comment:"Gare"},
+    {car:"Félix",date:"",trip:"Ville",duration:15,km:4,weather:"Jour",comment:"Piscine et Nicolas About"},
+    {car:"Félix",date:"2026-02-12",trip:"Ville",duration:45,km:22,weather:"Jour",comment:""},
+    {car:"Félix",date:"2026-03-01",trip:"Ville",duration:45,km:15,weather:"Jour",comment:""},
+    {car:"Félix",date:"2026-03-06",trip:"Ville",duration:45,km:19,weather:"Jour",comment:""},
+    {car:"Félix",date:"2026-03-07",trip:"Ville",duration:70,km:30,weather:"Jour",comment:""},
+    {car:"Félix",date:"2026-03-11",trip:"Ville",duration:10,km:3,weather:"Jour",comment:""},
+    {car:"Félix",date:"2026-03-14",trip:"Ville",duration:45,km:28,weather:"Jour",comment:""},
+    {car:"Félix",date:"2026-03-15",trip:"Ville",duration:20,km:10,weather:"Jour",comment:""},
+    {car:"Félix",date:"2026-03-18",trip:"Ville",duration:15,km:4,weather:"Jour",comment:""}
+  ];
+
+  var STORAGE_KEY = "drives_conduite_quentin_v6";
+  var editingIndex = null;
+  var memoryDrives = cloneInitial();
+  var CAN_STORE = storageAvailable();
+
+  function showDebug(msg){
+    var box = document.getElementById('debug');
+    box.style.display = 'block';
+    box.innerHTML = msg;
+  }
+
+  window.onerror = function(message, source, lineno, colno){
+    showDebug('Erreur Safari détectée :\n' + message + '\nLigne : ' + lineno + (colno ? ' / Colonne : ' + colno : ''));
+  };
+
+  function cloneInitial(){
+    return JSON.parse(JSON.stringify(INITIAL_DRIVES));
+  }
+
+  function storageAvailable(){
+    try{
+      var key = '__test_storage__';
+      localStorage.setItem(key,'1');
+      localStorage.removeItem(key);
+      return true;
+    }catch(e){
+      return false;
+    }
+  }
+
+  function getDrives(){
+    if(!CAN_STORE){ return memoryDrives; }
+    try{
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw){
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(cloneInitial()));
+        return cloneInitial();
+      }
+      var parsed = JSON.parse(raw);
+      if(Object.prototype.toString.call(parsed) === '[object Array]') return parsed;
+      return cloneInitial();
+    }catch(e){
+      return cloneInitial();
+    }
+  }
+
+  function saveDrives(drives){
+    if(!CAN_STORE){ memoryDrives = drives; return; }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(drives));
+  }
+
+  function escapeHtml(str){
+    return String(str || '')
+      .replace(/&/g,'&amp;')
+      .replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;')
+      .replace(/'/g,'&#039;');
+  }
+
+  function formatDateFr(date){
+    if(!date) return 'Date non renseignée';
+    if(date.indexOf('-') === -1) return date;
+    var parts = date.split('-');
+    if(parts.length !== 3) return date;
+    var d = new Date(parseInt(parts[0],10), parseInt(parts[1],10)-1, parseInt(parts[2],10));
+    if(isNaN(d.getTime())) return date;
+    return d.toLocaleDateString('fr-FR', {day:'numeric', month:'long', year:'numeric'});
+  }
+
+  function formatKm(value){
+    var num = Number(value || 0);
+    return num.toLocaleString('fr-FR', {minimumFractionDigits:0, maximumFractionDigits:1}) + ' km';
+  }
+
+  function formatDuration(minutes){
+    var total = Math.round(Number(minutes || 0));
+    var h = Math.floor(total/60);
+    var m = total % 60;
+    if(h && m) return h + ' h ' + m + ' min';
+    if(h) return h + ' h';
+    return m + ' min';
+  }
+
+  function setNotice(text){
+    document.getElementById('notice').innerHTML = text;
+  }
+
+  function updateTotals(drives){
+    var totalKm = 0;
+    var totalMin = 0;
+    var i;
+    for(i=0;i<drives.length;i++){
+      totalKm += Number(drives[i].km || 0);
+      totalMin += Number(drives[i].duration || 0);
+    }
+    document.getElementById('totalKm').innerHTML = formatKm(totalKm);
+    document.getElementById('totalHours').innerHTML = formatDuration(totalMin);
+  }
+
+  function buildDetail(drive){
+    var arr = [];
+    if(drive.car) arr.push('Voiture : ' + escapeHtml(drive.car));
+    if(drive.weather) arr.push('Météo : ' + escapeHtml(drive.weather));
+    if(drive.comment) arr.push('Note : ' + escapeHtml(drive.comment));
+    if(!arr.length) return 'Aucun détail';
+    return arr.join(' · ');
+  }
+
+  function render(){
+    var originalDrives = getDrives();
+    var drives = originalDrives.slice().sort(function(a, b){
+      return new Date(b.date || 0) - new Date(a.date || 0);
+    });
+    var list = document.getElementById('driveList');
+    var empty = document.getElementById('emptyState');
+    var i, drive, row, html;
+    list.innerHTML = '';
+    if(!drives.length){
+      empty.style.display = 'block';
+      updateTotals([]);
+      return;
+    }
+    empty.style.display = 'none';
+    for(i=0;i<drives.length;i++){
+      drive = drives[i];
+      row = document.createElement('div');
+      row.className = 'drive';
+      html = ''
+        + '<div class="drive-title">' + formatDateFr(drive.date) + '</div>'
+        + '<div class="drive-meta">' + escapeHtml(drive.trip || '') + ' · ' + formatDuration(drive.duration) + ' · ' + formatKm(drive.km) + '</div>'
+        + '<div class="drive-note">' + buildDetail(drive) + '</div>'
+        + '<div class="drive-actions">'
+        + '<button class="mini-btn" type="button" data-action="edit" data-index="' + originalDrives.indexOf(drive) + '">Modifier</button>'
+        + '<button class="mini-btn" type="button" data-action="delete" data-index="' + originalDrives.indexOf(drive) + '">Suppr.</button>'
+        + '</div>';
+      row.innerHTML = html;
+      list.appendChild(row);
+    }
+    updateTotals(drives);
+  }
+
+  function openEditor(index){
+    var drives = getDrives();
+    var isNew = typeof index !== 'number';
+    var drive = isNew ? {car:'',date:'',trip:'',weather:'',duration:'',km:'',comment:''} : drives[index];
+    editingIndex = isNew ? null : index;
+    document.getElementById('editorTitle').innerHTML = isNew ? 'Nouveau trajet' : 'Modifier le trajet';
+    document.getElementById('driveCar').value = drive.car || '';
+    document.getElementById('driveDate').value = drive.date || '';
+    document.getElementById('driveTrip').value = drive.trip || '';
+    document.getElementById('driveWeather').value = drive.weather || '';
+    document.getElementById('driveDuration').value = (drive.duration === 0 || drive.duration) ? drive.duration : '';
+    document.getElementById('driveKm').value = (drive.km === 0 || drive.km) ? drive.km : '';
+    document.getElementById('driveComment').value = drive.comment || '';
+    document.getElementById('editorBackdrop').className = 'editor-backdrop open';
+  }
+
+  function closeEditor(){
+    document.getElementById('editorBackdrop').className = 'editor-backdrop';
+    editingIndex = null;
+  }
+
+  function saveCurrentDrive(){
+    var trip = document.getElementById('driveTrip').value.replace(/^\s+|\s+$/g,'');
+    if(!trip){ setNotice('Le champ trajet est obligatoire.'); return; }
+    var entry = {
+      car: document.getElementById('driveCar').value.replace(/^\s+|\s+$/g,''),
+      date: document.getElementById('driveDate').value,
+      trip: trip,
+      weather: document.getElementById('driveWeather').value.replace(/^\s+|\s+$/g,''),
+      duration: Number(document.getElementById('driveDuration').value || 0),
+      km: Number(document.getElementById('driveKm').value || 0),
+      comment: document.getElementById('driveComment').value.replace(/^\s+|\s+$/g,'')
+    };
+    var drives = getDrives();
+    if(editingIndex === null){
+      drives.push(entry);
+      setNotice('Nouveau trajet ajouté.');
+    }else{
+      drives[editingIndex] = entry;
+      setNotice('Trajet modifié.');
+    }
+    saveDrives(drives);
+    closeEditor();
+    render();
+  }
+
+  function deleteDrive(index){
+    var drives = getDrives();
+    drives.splice(index,1);
+    saveDrives(drives);
+    setNotice('Trajet supprimé.');
+    render();
+  }
+
+  function reimportData(){
+    document.getElementById('csvFileInput').click();
+  }
+
+  function normalizeCsvText(text){
+    return text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  }
+
+  function splitCsvLine(line){
+    var result = [];
+    var current = '';
+    var inQuotes = false;
+    var i, char, nextChar;
+
+    for(i = 0; i < line.length; i++){
+      char = line.charAt(i);
+      nextChar = line.charAt(i + 1);
+
+      if(char === '"'){
+        if(inQuotes && nextChar === '"'){
+          current += '"';
+          i++;
+        }else{
+          inQuotes = !inQuotes;
+        }
+      }else if(char === ';' && !inQuotes){
+        result.push(current);
+        current = '';
+      }else{
+        current += char;
+      }
+    }
+
+    result.push(current);
+    return result;
+  }
+
+  function parseCsv(text){
+    var lines = normalizeCsvText(text).split('\n');
+    var rows = [];
+    var i, line, cols;
+
+    for(i = 0; i < lines.length; i++){
+      line = lines[i].trim();
+      if(!line) continue;
+      cols = splitCsvLine(line);
+      rows.push(cols);
+    }
+
+    return rows;
+  }
+
+  function importCsvFile(file){
+    var reader = new FileReader();
+
+    reader.onload = function(event){
+      try{
+        var text = event.target.result;
+        var rows = parseCsv(text);
+        var drives = [];
+        var i, row;
+
+        if(!rows.length){
+          setNotice('Fichier CSV vide.');
+          return;
+        }
+
+        for(i = 1; i < rows.length; i++){
+          row = rows[i];
+          if(!row.length) continue;
+
+          drives.push({
+            car: row[0] || '',
+            date: row[1] || '',
+            trip: row[2] || '',
+            duration: Number(String(row[3] || '0').replace(',', '.')) || 0,
+            km: Number(String(row[4] || '0').replace(',', '.')) || 0,
+            weather: row[5] || '',
+            comment: row[6] || ''
+          });
+        }
+
+        saveDrives(drives);
+        setNotice('Import CSV terminé.');
+        render();
+      }catch(e){
+        setNotice('Erreur lors de l’import du CSV.');
+        showDebug('Import CSV bloqué :\n' + (e && e.message ? e.message : e));
+      }
+    };
+
+    reader.onerror = function(){
+      setNotice('Impossible de lire le fichier CSV.');
+    };
+
+    reader.readAsText(file, 'utf-8');
+  }
+
+  function resetApp(){
+    if(CAN_STORE){ localStorage.removeItem(STORAGE_KEY); }
+    memoryDrives = cloneInitial();
+    setNotice('Application réinitialisée avec les données du CSV.');
+    render();
+  }
+
+  function exportCsv(){
+    var drives = getDrives();
+    var lines = [];
+    var i, d, row;
+    var bom = '\uFEFF';
+
+    function csvValue(value){
+      var str = String(value == null ? '' : value);
+      str = str.replace(/"/g, '""');
+      return '"' + str + '"';
+    }
+
+    lines.push([
+      'Voiture',
+      'Date',
+      'Trajet',
+      'Durée (min)',
+      'Km',
+      'Météo',
+      'Commentaire'
+    ].join(';'));
+
+    for(i = 0; i < drives.length; i++){
+      d = drives[i];
+      row = [
+        csvValue(d.car),
+        csvValue(d.date),
+        csvValue(d.trip),
+        csvValue(d.duration),
+        csvValue(d.km),
+        csvValue(d.weather),
+        csvValue(d.comment)
+      ];
+      lines.push(row.join(';'));
+    }
+
+    var csvContent = bom + lines.join('\n');
+    var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    var url = URL.createObjectURL(blob);
+    var link = document.createElement('a');
+    var date = new Date();
+    var fileName =
+      'conduite_accompagnee_' +
+      date.getFullYear() +
+      '-' +
+      ('0' + (date.getMonth() + 1)).slice(-2) +
+      '-' +
+      ('0' + date.getDate()).slice(-2) +
+      '.csv';
+
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    setTimeout(function(){
+      URL.revokeObjectURL(url);
+    }, 1000);
+
+    setNotice('Export CSV terminé.');
+  }
+
+  function findActionButton(target){
+    while(target && target !== document){
+      if(target.getAttribute && target.getAttribute('data-action')) return target;
+      target = target.parentNode;
+    }
+    return null;
+  }
+
+  function handleListClick(event){
+    var button = findActionButton(event.target);
+    var index, action;
+    if(!button) return;
+    index = Number(button.getAttribute('data-index'));
+    action = button.getAttribute('data-action');
+    if(action === 'edit') openEditor(index);
+    if(action === 'delete') deleteDrive(index);
+  }
+
+  try{
+    render();
+    document.getElementById('fab').onclick = function(){ openEditor(); };
+    document.getElementById('importBtn').onclick = reimportData;
+    document.getElementById('csvFileInput').onchange = function(event){
+      var file = event.target.files && event.target.files[0];
+      if(file){
+        importCsvFile(file);
+      }
+      event.target.value = '';
+    };
+    document.getElementById('resetBtn').onclick = resetApp;
+    document.getElementById('exportBtn').onclick = exportCsv;
+    document.getElementById('cancelBtn').onclick = closeEditor;
+    document.getElementById('saveBtn').onclick = saveCurrentDrive;
+    document.getElementById('driveList').onclick = handleListClick;
+    document.getElementById('editorBackdrop').onclick = function(event){
+      event = event || window.event;
+      var target = event.target || event.srcElement;
+      if(target && target.id === 'editorBackdrop') closeEditor();
+    };
+  }catch(err){
+    showDebug('Initialisation bloquée :\n' + (err && err.message ? err.message : err));
+  }
+})();
+</script>
+</body>
+</html>
