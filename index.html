@@ -61,6 +61,7 @@ h1{margin:0 0 8px;font-size:40px;line-height:1;font-weight:800;letter-spacing:-0
   <div class="top-actions">
     <button id="importBtn" class="small-btn" type="button">Réimporter les données du CSV</button>
     <button id="resetBtn" class="small-btn" type="button">Réinitialiser l’application</button>
+    <button id="exportBtn" class="small-btn" type="button">Sauvegarder en CSV</button>
   </div>
 
   <div id="driveList" class="list"></div>
@@ -332,6 +333,69 @@ h1{margin:0 0 8px;font-size:40px;line-height:1;font-weight:800;letter-spacing:-0
     render();
   }
 
+  function exportCsv(){
+    var drives = getDrives();
+    var lines = [];
+    var i, d, row;
+    var bom = '\uFEFF';
+
+    function csvValue(value){
+      var str = String(value == null ? '' : value);
+      str = str.replace(/"/g, '""');
+      return '"' + str + '"';
+    }
+
+    lines.push([
+      'Voiture',
+      'Date',
+      'Trajet',
+      'Durée (min)',
+      'Km',
+      'Météo',
+      'Commentaire'
+    ].join(';'));
+
+    for(i = 0; i < drives.length; i++){
+      d = drives[i];
+      row = [
+        csvValue(d.car),
+        csvValue(d.date),
+        csvValue(d.trip),
+        csvValue(d.duration),
+        csvValue(d.km),
+        csvValue(d.weather),
+        csvValue(d.comment)
+      ];
+      lines.push(row.join(';'));
+    }
+
+    var csvContent = bom + lines.join('\n');
+    var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    var url = URL.createObjectURL(blob);
+    var link = document.createElement('a');
+    var date = new Date();
+    var fileName =
+      'conduite_accompagnee_' +
+      date.getFullYear() +
+      '-' +
+      ('0' + (date.getMonth() + 1)).slice(-2) +
+      '-' +
+      ('0' + date.getDate()).slice(-2) +
+      '.csv';
+
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    setTimeout(function(){
+      URL.revokeObjectURL(url);
+    }, 1000);
+
+    setNotice('Export CSV terminé.');
+  }
+
   function findActionButton(target){
     while(target && target !== document){
       if(target.getAttribute && target.getAttribute('data-action')) return target;
@@ -355,6 +419,7 @@ h1{margin:0 0 8px;font-size:40px;line-height:1;font-weight:800;letter-spacing:-0
     document.getElementById('fab').onclick = function(){ openEditor(); };
     document.getElementById('importBtn').onclick = reimportData;
     document.getElementById('resetBtn').onclick = resetApp;
+    document.getElementById('exportBtn').onclick = exportCsv;
     document.getElementById('cancelBtn').onclick = closeEditor;
     document.getElementById('saveBtn').onclick = saveCurrentDrive;
     document.getElementById('driveList').onclick = handleListClick;
