@@ -249,9 +249,10 @@ h1{margin:0 0 8px;font-size:40px;line-height:1;font-weight:800;letter-spacing:-0
   }
 
   function render(){
-    var drives = getDrives().slice().sort(function(a, b){
-      return new Date(b.date || 0) - new Date(a.date || 0);
-    });
+    var originalDrives = getDrives();
+var drives = originalDrives.slice().sort(function(a, b){
+  return new Date(b.date || 0) - new Date(a.date || 0);
+});
     var list = document.getElementById('driveList');
     var empty = document.getElementById('emptyState');
     var i, drive, row, html;
@@ -271,8 +272,8 @@ h1{margin:0 0 8px;font-size:40px;line-height:1;font-weight:800;letter-spacing:-0
         + '<div class="drive-meta">' + escapeHtml(drive.trip || '') + ' · ' + formatDuration(drive.duration) + ' · ' + formatKm(drive.km) + '</div>'
         + '<div class="drive-note">' + buildDetail(drive) + '</div>'
         + '<div class="drive-actions">'
-        + '<button class="mini-btn" type="button" data-action="edit" data-index="' + i + '">Modifier</button>'
-        + '<button class="mini-btn" type="button" data-action="delete" data-index="' + i + '">Suppr.</button>'
+        + '<button class="mini-btn" type="button" data-action="edit" data-index="' + originalDrives.indexOf(drive) + '">Modifier</button>'
++ '<button class="mini-btn" type="button" data-action="delete" data-index="' + originalDrives.indexOf(drive) + '">Suppr.</button>'
         + '</div>';
       row.innerHTML = html;
       list.appendChild(row);
