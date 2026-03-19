@@ -5,50 +5,280 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <link rel="apple-touch-icon" href="icon.png" />
 <title>Conduite accompagnée</title>
+
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-:root{--bg:#f3f3f6;--text:#111;--muted:#8e8e93;--accent:#ff7a00;--line:#ececf1;--card:#fff}
-body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",sans-serif;background:var(--bg);color:var(--text);padding:28px 18px 140px}
+
+:root{
+  --bg:#f3f3f6;
+  --text:#111;
+  --muted:#8e8e93;
+  --accent:#ff7a00;
+  --line:#ececf1;
+  --card:#fff;
+}
+
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  padding:28px 18px 140px;
+}
+
 .app{max-width:760px;margin:0 auto}
-h1{margin:0 0 10px;font-size:42px;font-weight:800;letter-spacing:-0.04em;color:var(--accent);line-height:1}
-.subtitle{color:var(--muted);font-size:16px;margin-bottom:12px}
-.notice{background:#fff;border:1px solid var(--line);border-radius:18px;padding:12px 14px;margin-bottom:14px;font-size:14px;color:var(--muted)}
-.top-actions{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap}
-.small-btn,.btn,.fab,.mini-btn{appearance:none;-webkit-appearance:none;border:none;cursor:pointer;pointer-events:auto}
-.small-btn{background:#fff;color:var(--accent);border-radius:16px;padding:12px 14px;font-size:15px;font-weight:700;box-shadow:0 1px 0 rgba(0,0,0,.03)}
+
+h1{
+  margin:0 0 10px;
+  font-size:42px;
+  font-weight:800;
+  letter-spacing:-0.04em;
+  color:var(--accent);
+  line-height:1;
+}
+
+.subtitle{
+  color:var(--muted);
+  font-size:16px;
+  margin-bottom:12px;
+}
+
+.notice{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:12px 14px;
+  margin-bottom:14px;
+  font-size:14px;
+  color:var(--muted);
+}
+
+.top-actions{
+  display:flex;
+  gap:10px;
+  margin-bottom:18px;
+  flex-wrap:wrap;
+}
+
+.small-btn,
+.btn,
+.fab,
+.mini-btn{
+  appearance:none;
+  -webkit-appearance:none;
+  border:none;
+  cursor:pointer;
+  pointer-events:auto;
+}
+
+.small-btn{
+  background:#fff;
+  color:var(--accent);
+  border-radius:16px;
+  padding:12px 14px;
+  font-size:15px;
+  font-weight:700;
+  box-shadow:0 1px 0 rgba(0,0,0,.03);
+}
+
 .list{display:flex;flex-direction:column}
-.drive{display:grid;grid-template-columns:20px 1fr auto;gap:12px;padding:15px 0;border-bottom:1px solid var(--line);align-items:start}
-.drive-bullet{width:20px;height:20px;border-radius:50%;border:1.5px solid #d1d1d6;margin-top:6px;background:#fff}
+
+.drive{
+  display:grid;
+  grid-template-columns:20px 1fr auto;
+  gap:12px;
+  padding:15px 0;
+  border-bottom:1px solid var(--line);
+  align-items:start;
+}
+
+.drive-bullet{
+  width:20px;
+  height:20px;
+  border-radius:50%;
+  border:1.5px solid #d1d1d6;
+  margin-top:6px;
+  background:#fff;
+}
+
 .drive-main{min-width:0}
-.drive-title{font-size:18px;font-weight:600}
-.drive-meta{margin-top:6px;font-size:14px;color:var(--accent);display:flex;gap:10px;flex-wrap:wrap}
-.drive-note{margin-top:7px;font-size:14px;color:var(--muted);line-height:1.35}
-.drive-actions{display:flex;gap:8px;align-self:center}
-.mini-btn{background:#fff;border:1px solid var(--line);color:var(--accent);border-radius:14px;padding:10px 12px;font-size:14px;font-weight:700}
-.empty{color:var(--muted);font-size:17px;display:none}
-.totals{margin-top:22px;background:var(--card);border-radius:22px;padding:18px;display:grid;grid-template-columns:1fr 1fr;gap:12px;box-shadow:0 1px 0 rgba(0,0,0,.03)}
-.total-box{background:#fafafc;border:1px solid var(--line);border-radius:18px;padding:14px}
-.total-label{font-size:13px;color:var(--muted);margin-bottom:6px}
-.total-value{font-size:28px;font-weight:800;letter-spacing:-0.03em;color:var(--accent)}
-.editor-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.22);display:none;align-items:flex-end;padding:12px;z-index:9999}
+
+.drive-title{
+  font-size:18px;
+  font-weight:600;
+}
+
+.drive-meta{
+  margin-top:6px;
+  font-size:14px;
+  color:var(--accent);
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.drive-note{
+  margin-top:7px;
+  font-size:14px;
+  color:var(--muted);
+  line-height:1.35;
+}
+
+.drive-actions{
+  display:flex;
+  gap:8px;
+  align-self:center;
+}
+
+.mini-btn{
+  background:#fff;
+  border:1px solid var(--line);
+  color:var(--accent);
+  border-radius:14px;
+  padding:10px 12px;
+  font-size:14px;
+  font-weight:700;
+}
+
+.empty{
+  color:var(--muted);
+  font-size:17px;
+  display:none;
+}
+
+.totals{
+  margin-top:22px;
+  background:var(--card);
+  border-radius:22px;
+  padding:18px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  box-shadow:0 1px 0 rgba(0,0,0,.03);
+}
+
+.total-box{
+  background:#fafafc;
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:14px;
+}
+
+.total-label{
+  font-size:13px;
+  color:var(--muted);
+  margin-bottom:6px;
+}
+
+.total-value{
+  font-size:28px;
+  font-weight:800;
+  letter-spacing:-0.03em;
+  color:var(--accent);
+}
+
+.editor-backdrop{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.22);
+  display:none;
+  align-items:flex-end;
+  padding:12px;
+  z-index:9999;
+}
+
 .editor-backdrop.open{display:flex}
-.editor-sheet{width:100%;background:#fff;border-radius:28px;padding:18px;max-height:92vh;overflow:auto;box-shadow:0 12px 40px rgba(0,0,0,.18)}
-.editor-title{font-size:22px;font-weight:700;color:var(--accent);margin-bottom:12px}
-.field{width:100%;padding:14px;border-radius:18px;border:1px solid #e7e7ec;margin-bottom:12px;font-size:17px;flex:1;min-width:0;background:#fff;color:#111}
-.field:focus{border-color:var(--accent);outline:none}
-.row{display:flex;gap:10px}
-.actions{display:flex;gap:10px;margin-top:8px}
-.btn{flex:1;padding:14px;border-radius:18px;font-weight:700;font-size:16px}
-.btn-cancel{background:#f2f2f7;color:#111}
-.btn-save{background:var(--accent);color:#fff}
-.fab{position:fixed;right:22px;bottom:28px;width:76px;height:76px;border-radius:50%;background:var(--accent);color:#fff;font-size:42px;box-shadow:0 10px 24px rgba(255,122,0,.28);z-index:1000}
+
+.editor-sheet{
+  width:100%;
+  background:#fff;
+  border-radius:28px;
+  padding:18px;
+  max-height:92vh;
+  overflow:auto;
+  box-shadow:0 12px 40px rgba(0,0,0,.18);
+}
+
+.editor-title{
+  font-size:22px;
+  font-weight:700;
+  color:var(--accent);
+  margin-bottom:12px;
+}
+
+.field{
+  width:100%;
+  padding:14px;
+  border-radius:18px;
+  border:1px solid #e7e7ec;
+  margin-bottom:12px;
+  font-size:17px;
+  flex:1;
+  min-width:0;
+  background:#fff;
+  color:#111;
+}
+
+.field:focus{
+  border-color:var(--accent);
+  outline:none;
+}
+
+.row{
+  display:flex;
+  gap:10px;
+}
+
+.actions{
+  display:flex;
+  gap:10px;
+  margin-top:8px;
+}
+
+.btn{
+  flex:1;
+  padding:14px;
+  border-radius:18px;
+  font-weight:700;
+  font-size:16px;
+}
+
+.btn-cancel{
+  background:#f2f2f7;
+  color:#111;
+}
+
+.btn-save{
+  background:var(--accent);
+  color:#fff;
+}
+
+.fab{
+  position:fixed;
+  right:22px;
+  bottom:28px;
+  width:76px;
+  height:76px;
+  border-radius:50%;
+  background:var(--accent);
+  color:#fff;
+  font-size:42px;
+  box-shadow:0 10px 24px rgba(255,122,0,.28);
+  z-index:1000;
+}
+
 @media (max-width:560px){
   .drive{grid-template-columns:20px 1fr}
-  .drive-actions{grid-column:2;justify-self:start;margin-top:10px}
+  .drive-actions{
+    grid-column:2;
+    justify-self:start;
+    margin-top:10px;
+  }
   .totals{grid-template-columns:1fr}
 }
 </style>
 </head>
+
 <body>
 <div class="app">
   <h1>Conduite accompagnée</h1>
@@ -104,7 +334,7 @@ h1{margin:0 0 10px;font-size:42px;font-weight:800;letter-spacing:-0.04em;color:v
 </div>
 
 <script>
-const INITIAL_DRIVES = [
+var INITIAL_DRIVES = [
   {car:"Titine",date:"2025-12-19",trip:"Ville",duration:15,km:2.8,weather:"Nuit",comment:""},
   {car:"Titine",date:"2025-12-21",trip:"Agglomération",duration:18,km:7,weather:"Jour / Pluie",comment:""},
   {car:"Titine",date:"2025-12-22",trip:"Agglomération",duration:35,km:14.5,weather:"Jour / Nuit",comment:""},
@@ -126,17 +356,31 @@ const INITIAL_DRIVES = [
   {car:"Félix",date:"2026-03-18",trip:"Ville",duration:15,km:4,weather:"Jour",comment:""}
 ];
 
-const STORAGE_KEY = 'drives_conduite_quentin_v4';
-let editingIndex = null;
+var STORAGE_KEY = "drives_conduite_quentin_v5";
+var editingIndex = null;
+var memoryDrives = cloneInitial();
 
 function cloneInitial(){
-  return INITIAL_DRIVES.map(item => ({...item}));
+  var arr = [];
+  var i;
+  for(i = 0; i < INITIAL_DRIVES.length; i++){
+    arr.push({
+      car: INITIAL_DRIVES[i].car,
+      date: INITIAL_DRIVES[i].date,
+      trip: INITIAL_DRIVES[i].trip,
+      duration: INITIAL_DRIVES[i].duration,
+      km: INITIAL_DRIVES[i].km,
+      weather: INITIAL_DRIVES[i].weather,
+      comment: INITIAL_DRIVES[i].comment
+    });
+  }
+  return arr;
 }
 
 function storageAvailable(){
   try{
-    const key='__test_storage__';
-    localStorage.setItem(key,'1');
+    var key = "__test_storage__";
+    localStorage.setItem(key, "1");
     localStorage.removeItem(key);
     return true;
   }catch(e){
@@ -144,168 +388,213 @@ function storageAvailable(){
   }
 }
 
-const CAN_STORE = storageAvailable();
+var CAN_STORE = storageAvailable();
 
 function getDrives(){
-  if(!CAN_STORE) return cloneInitial();
+  if(!CAN_STORE){
+    return memoryDrives;
+  }
+
   try{
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if(!raw) return cloneInitial();
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : cloneInitial();
+    var raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw){
+      var seeded = cloneInitial();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(seeded));
+      return seeded;
+    }
+    var parsed = JSON.parse(raw);
+    if(Object.prototype.toString.call(parsed) === "[object Array]"){
+      return parsed;
+    }
+    return cloneInitial();
   }catch(e){
     return cloneInitial();
   }
 }
 
 function saveDrives(drives){
-  if(!CAN_STORE) return;
+  if(!CAN_STORE){
+    memoryDrives = drives;
+    return;
+  }
   localStorage.setItem(STORAGE_KEY, JSON.stringify(drives));
 }
 
-function seedIfNeeded(){
-  if(!CAN_STORE) return;
-  const raw = localStorage.getItem(STORAGE_KEY);
-  if(!raw){
-    saveDrives(cloneInitial());
-  }
-}
-
 function escapeHtml(str){
-  return String(str || '')
-    .replace(/&/g,'&amp;')
-    .replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;')
-    .replace(/"/g,'&quot;')
-    .replace(/'/g,'&#039;');
+  return String(str || "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
 }
 
 function formatDateFr(date){
-  if(!date) return 'Date non renseignée';
-  const parts = date.split('-');
+  if(!date) return "Date non renseignée";
+
+  var parts = date.split("-");
   if(parts.length !== 3) return date;
-  const d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
-  return d.toLocaleDateString('fr-FR', {day:'numeric', month:'long', year:'numeric'});
+
+  var year = parseInt(parts[0],10);
+  var month = parseInt(parts[1],10) - 1;
+  var day = parseInt(parts[2],10);
+
+  var d = new Date(year, month, day);
+  if(isNaN(d.getTime())) return date;
+
+  return d.toLocaleDateString("fr-FR", {
+    day:"numeric",
+    month:"long",
+    year:"numeric"
+  });
 }
 
 function formatKm(value){
-  return Number(value || 0).toLocaleString('fr-FR', {minimumFractionDigits:0, maximumFractionDigits:1}) + ' km';
+  var num = Number(value || 0);
+  return num.toLocaleString("fr-FR", {
+    minimumFractionDigits:0,
+    maximumFractionDigits:1
+  }) + " km";
 }
 
 function formatDuration(minutes){
-  const total = Math.round(Number(minutes || 0));
-  const h = Math.floor(total / 60);
-  const m = total % 60;
-  if(h && m) return h + ' h ' + m + ' min';
-  if(h) return h + ' h';
-  return m + ' min';
+  var total = Math.round(Number(minutes || 0));
+  var h = Math.floor(total / 60);
+  var m = total % 60;
+
+  if(h && m) return h + " h " + m + " min";
+  if(h) return h + " h";
+  return m + " min";
 }
 
 function setNotice(text){
-  document.getElementById('notice').textContent = text;
+  document.getElementById("notice").textContent = text;
 }
 
 function updateTotals(drives){
-  const totalKm = drives.reduce((sum, item) => sum + (Number(item.km) || 0), 0);
-  const totalMin = drives.reduce((sum, item) => sum + (Number(item.duration) || 0), 0);
-  document.getElementById('totalKm').textContent = formatKm(totalKm);
-  document.getElementById('totalHours').textContent = formatDuration(totalMin);
+  var totalKm = 0;
+  var totalMin = 0;
+  var i;
+
+  for(i = 0; i < drives.length; i++){
+    totalKm += Number(drives[i].km || 0);
+    totalMin += Number(drives[i].duration || 0);
+  }
+
+  document.getElementById("totalKm").textContent = formatKm(totalKm);
+  document.getElementById("totalHours").textContent = formatDuration(totalMin);
 }
 
 function buildDetail(drive){
-  const parts = [];
-  if(drive.car) parts.push('Voiture : ' + escapeHtml(drive.car));
-  if(drive.weather) parts.push('Météo : ' + escapeHtml(drive.weather));
-  if(drive.comment) parts.push('Note : ' + escapeHtml(drive.comment));
-  return parts.join(' · ') || 'Aucun détail';
+  var parts = [];
+
+  if(drive.car) parts.push("Voiture : " + escapeHtml(drive.car));
+  if(drive.weather) parts.push("Météo : " + escapeHtml(drive.weather));
+  if(drive.comment) parts.push("Note : " + escapeHtml(drive.comment));
+
+  if(!parts.length) return "Aucun détail";
+  return parts.join(" · ");
 }
 
 function render(){
-  const drives = getDrives();
-  const list = document.getElementById('driveList');
-  const empty = document.getElementById('emptyState');
-  list.innerHTML = '';
+  var drives = getDrives();
+  var list = document.getElementById("driveList");
+  var empty = document.getElementById("emptyState");
+  var i, drive, row, html;
+
+  list.innerHTML = "";
 
   if(!drives.length){
-    empty.style.display = 'block';
+    empty.style.display = "block";
     updateTotals([]);
     return;
   }
 
-  empty.style.display = 'none';
+  empty.style.display = "none";
 
-  drives.forEach((drive, index) => {
-    const row = document.createElement('div');
-    row.className = 'drive';
-    row.innerHTML = `
-      <div class="drive-bullet"></div>
-      <div class="drive-main">
-        <div class="drive-title">${escapeHtml(drive.trip || 'Trajet')}</div>
-        <div class="drive-meta">
-          <span>${formatDateFr(drive.date)}</span>
-          <span>${formatDuration(drive.duration)}</span>
-          <span>${formatKm(drive.km)}</span>
-        </div>
-        <div class="drive-note">${buildDetail(drive)}</div>
-      </div>
-      <div class="drive-actions">
-        <button class="mini-btn" type="button" data-action="edit" data-index="${index}">Modifier</button>
-        <button class="mini-btn" type="button" data-action="delete" data-index="${index}">Suppr.</button>
-      </div>
-    `;
+  for(i = 0; i < drives.length; i++){
+    drive = drives[i];
+    row = document.createElement("div");
+    row.className = "drive";
+
+    html = ''
+      + '<div class="drive-bullet"></div>'
+      + '<div class="drive-main">'
+      +   '<div class="drive-title">' + escapeHtml(drive.trip || "Trajet") + '</div>'
+      +   '<div class="drive-meta">'
+      +     '<span>' + formatDateFr(drive.date) + '</span>'
+      +     '<span>' + formatDuration(drive.duration) + '</span>'
+      +     '<span>' + formatKm(drive.km) + '</span>'
+      +   '</div>'
+      +   '<div class="drive-note">' + buildDetail(drive) + '</div>'
+      + '</div>'
+      + '<div class="drive-actions">'
+      +   '<button class="mini-btn" type="button" data-action="edit" data-index="' + i + '">Modifier</button>'
+      +   '<button class="mini-btn" type="button" data-action="delete" data-index="' + i + '">Suppr.</button>'
+      + '</div>';
+
+    row.innerHTML = html;
     list.appendChild(row);
-  });
+  }
 
   updateTotals(drives);
 }
 
 function openEditor(index){
-  const drives = getDrives();
-  const isNew = typeof index !== 'number';
+  var drives = getDrives();
+  var isNew = (typeof index !== "number");
+  var drive;
+
   editingIndex = isNew ? null : index;
-  const drive = isNew ? {car:'', date:'', trip:'', weather:'', duration:'', km:'', comment:''} : drives[index];
 
-  document.getElementById('editorTitle').textContent = isNew ? 'Nouveau trajet' : 'Modifier le trajet';
-  document.getElementById('driveCar').value = drive.car || '';
-  document.getElementById('driveDate').value = drive.date || '';
-  document.getElementById('driveTrip').value = drive.trip || '';
-  document.getElementById('driveWeather').value = drive.weather || '';
-  document.getElementById('driveDuration').value = drive.duration ?? '';
-  document.getElementById('driveKm').value = drive.km ?? '';
-  document.getElementById('driveComment').value = drive.comment || '';
+  if(isNew){
+    drive = {car:"",date:"",trip:"",weather:"",duration:"",km:"",comment:""};
+  }else{
+    drive = drives[index];
+  }
 
-  document.getElementById('editorBackdrop').classList.add('open');
+  document.getElementById("editorTitle").textContent = isNew ? "Nouveau trajet" : "Modifier le trajet";
+  document.getElementById("driveCar").value = drive.car || "";
+  document.getElementById("driveDate").value = drive.date || "";
+  document.getElementById("driveTrip").value = drive.trip || "";
+  document.getElementById("driveWeather").value = drive.weather || "";
+  document.getElementById("driveDuration").value = (drive.duration === 0 || drive.duration) ? drive.duration : "";
+  document.getElementById("driveKm").value = (drive.km === 0 || drive.km) ? drive.km : "";
+  document.getElementById("driveComment").value = drive.comment || "";
+
+  document.getElementById("editorBackdrop").classList.add("open");
 }
 
 function closeEditor(){
-  document.getElementById('editorBackdrop').classList.remove('open');
+  document.getElementById("editorBackdrop").classList.remove("open");
   editingIndex = null;
 }
 
 function saveCurrentDrive(){
-  const trip = document.getElementById('driveTrip').value.trim();
+  var trip = document.getElementById("driveTrip").value.replace(/^\s+|\s+$/g,"");
   if(!trip){
-    setNotice('Le champ trajet est obligatoire.');
+    setNotice("Le champ trajet est obligatoire.");
     return;
   }
 
-  const entry = {
-    car: document.getElementById('driveCar').value.trim(),
-    date: document.getElementById('driveDate').value,
+  var entry = {
+    car: document.getElementById("driveCar").value.replace(/^\s+|\s+$/g,""),
+    date: document.getElementById("driveDate").value,
     trip: trip,
-    weather: document.getElementById('driveWeather').value.trim(),
-    duration: Number(document.getElementById('driveDuration').value || 0),
-    km: Number(document.getElementById('driveKm').value || 0),
-    comment: document.getElementById('driveComment').value.trim()
+    weather: document.getElementById("driveWeather").value.replace(/^\s+|\s+$/g,""),
+    duration: Number(document.getElementById("driveDuration").value || 0),
+    km: Number(document.getElementById("driveKm").value || 0),
+    comment: document.getElementById("driveComment").value.replace(/^\s+|\s+$/g,"")
   };
 
-  const drives = getDrives();
+  var drives = getDrives();
+
   if(editingIndex === null){
     drives.push(entry);
-    setNotice('Nouveau trajet ajouté.');
+    setNotice("Nouveau trajet ajouté.");
   }else{
     drives[editingIndex] = entry;
-    setNotice('Trajet modifié.');
+    setNotice("Trajet modifié.");
   }
 
   saveDrives(drives);
@@ -314,48 +603,67 @@ function saveCurrentDrive(){
 }
 
 function deleteDrive(index){
-  const drives = getDrives();
+  var drives = getDrives();
   drives.splice(index, 1);
   saveDrives(drives);
-  setNotice('Trajet supprimé.');
+  setNotice("Trajet supprimé.");
   render();
 }
 
 function reimportData(){
-  saveDrives(cloneInitial());
-  setNotice('Les données du CSV ont été réimportées.');
+  var fresh = cloneInitial();
+  saveDrives(fresh);
+  setNotice("Les données du CSV ont été réimportées.");
   render();
 }
 
 function resetApp(){
   if(CAN_STORE){
     localStorage.removeItem(STORAGE_KEY);
-    seedIfNeeded();
   }
-  setNotice('Application réinitialisée avec les données du CSV.');
+  memoryDrives = cloneInitial();
+  setNotice("Application réinitialisée avec les données du CSV.");
   render();
+}
+
+function findActionButton(target){
+  while(target && target !== document){
+    if(target.getAttribute && target.getAttribute("data-action")){
+      return target;
+    }
+    target = target.parentNode;
+  }
+  return null;
 }
 
 function handleListClick(event){
-  const button = event.target.closest('button[data-action]');
+  var button = findActionButton(event.target);
+  var index;
+  var action;
+
   if(!button) return;
-  const index = Number(button.dataset.index);
-  if(button.dataset.action === 'edit') openEditor(index);
-  if(button.dataset.action === 'delete') deleteDrive(index);
+
+  index = Number(button.getAttribute("data-index"));
+  action = button.getAttribute("data-action");
+
+  if(action === "edit") openEditor(index);
+  if(action === "delete") deleteDrive(index);
 }
 
 function init(){
-  seedIfNeeded();
   render();
 
-  document.getElementById('fab').addEventListener('click', () => openEditor());
-  document.getElementById('importBtn').addEventListener('click', reimportData);
-  document.getElementById('resetBtn').addEventListener('click', resetApp);
-  document.getElementById('cancelBtn').addEventListener('click', closeEditor);
-  document.getElementById('saveBtn').addEventListener('click', saveCurrentDrive);
-  document.getElementById('driveList').addEventListener('click', handleListClick);
-  document.getElementById('editorBackdrop').addEventListener('click', (event) => {
-    if(event.target.id === 'editorBackdrop') closeEditor();
+  document.getElementById("fab").addEventListener("click", function(){ openEditor(); });
+  document.getElementById("importBtn").addEventListener("click", reimportData);
+  document.getElementById("resetBtn").addEventListener("click", resetApp);
+  document.getElementById("cancelBtn").addEventListener("click", closeEditor);
+  document.getElementById("saveBtn").addEventListener("click", saveCurrentDrive);
+  document.getElementById("driveList").addEventListener("click", handleListClick);
+
+  document.getElementById("editorBackdrop").addEventListener("click", function(event){
+    if(event.target && event.target.id === "editorBackdrop"){
+      closeEditor();
+    }
   });
 }
 
