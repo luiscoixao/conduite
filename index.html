@@ -3,7 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Conduite accompagnée</title>
+<div class="title-row">
+  <img src="icon-orange.png" class="logo">
+  <h1>Conduite accompagnée</h1>
+</div>
 <link rel="apple-touch-icon" href="icon.png">
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -45,6 +48,17 @@ h1{margin:0 0 8px;font-size:40px;line-height:1;font-weight:800;letter-spacing:-0
 .row .field{flex:1}
 .totals{display:flex;gap:12px}
 .totals .total-box{flex:1;margin-bottom:0}
+}
+.title-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.logo{
+  width:34px;
+  height:34px;
+  object-fit:contain;
 }
 </style>
 </head>
